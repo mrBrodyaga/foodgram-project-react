@@ -130,3 +130,7 @@ dmypy.json
 
 # .idea
 .idea
+
+# Dev/yatube_project/.gitignore
+
+.vscode/

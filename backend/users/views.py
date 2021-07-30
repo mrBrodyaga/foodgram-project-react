@@ -1,0 +1,136 @@
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
+from django.shortcuts import get_object_or_404
+
+from rest_framework import status, viewsets
+from rest_framework.decorators import action, api_view
+from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.response import Response
+from rest_framework_simplejwt import tokens
+
+# from foodgram.settings import (
+#     CONFIRMATION_MESSAGE,
+#     CONFIRMATION_SUBJECT,
+#     SEND_FROM_EMAIL,
+# )
+
+from .models import Subscription, User
+from .permissions import IsAdmin
+from .serializers import (
+    # UserCodeSerializer,
+    # UserEmailSerializer,
+    SubscribeToSerializer,
+    SubscriptionSerializer,
+    CustomUserSerializer,
+)
+
+
+# @api_view(["POST"])
+# def send_confirmation_code(request):
+#     """ Отсылаем код получателю """
+#     serializer = UserEmailSerializer(data=request.data)
+#     serializer.is_valid(raise_exception=True)
+#     email = serializer.data.get("email")
+#     user = User.objects.get_or_create(email=email)
+#     confirmation_code = default_token_generator.make_token(user)
+#     send_mail(
+#         CONFIRMATION_SUBJECT,
+#         f"{CONFIRMATION_MESSAGE} {confirmation_code}",
+#         SEND_FROM_EMAIL,
+#         [email],
+#     )
+#     return Response(
+#         f"Код был отправлен на адрес почты {email}", status=status.HTTP_200_OK
+#     )
+
+
+# @api_view(["POST"])
+# def get_jwt_token(request):
+#     """ Отправитель отправляет код, проходит проверку и получает доступ """
+#     serializer = UserCodeSerializer(data=request.data)
+#     serializer.is_valid(raise_exception=True)
+#     email = serializer.data.get("email")
+#     confirmation_code = serializer.data.get("confirmation_code")
+#     user = get_object_or_404(User, email=email)
+#     if default_token_generator.check_token(user, confirmation_code):
+#         token = tokens.AccessToken.for_user(user)
+#         return Response({"token": f"{token}"}, status=status.HTTP_200_OK)
+#     return Response(
+#         {"confirmation_code": "Некорректный код"},
+#         status=status.HTTP_400_BAD_REQUEST,
+#     )
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    """ Получаем информацию по пользователю """
+
+    queryset = User.objects.all()
+    serializer_class = CustomUserSerializer
+    lookup_field = "id"
+    permission_classes = [IsAuthenticated]
+
+
+    @action(detail=True, methods=['POST'], url_path='subscribe')
+    def subscribe_to(self, request, *args, **kwargs):
+        following = get_object_or_404(User, id=self.kwargs['id'])
+        follower = request.user
+        subscribe, _ = Subscription.objects.get_or_create(following=following, follower=follower)
+        serializer = SubscribeToSerializer(following, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    @action(detail=True, methods=['DELETE'], url_path='subscribe')
+    def subscribe_remove(self, request, *args, **kwargs):
+        following = get_object_or_404(User, id=self.kwargs['id'])
+        follower = request.user
+        subscribe, _ = Subscription.objects.get_or_create(following=following, follower=follower).delete() #!
+        serializer = SubscribeToSerializer(subscribe, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(
+        methods=["patch", "get"],
+        permission_classes=[IsAuthenticated],
+        detail=False,
+        url_path="me",
+        url_name="me",
+    )
+    def me(self, request, *args, **kwargs):
+        user = self.request.user
+        serializer = self.get_serializer(user)
+        if self.request.method == "PATCH":
+            serializer = self.get_serializer(
+                user, data=request.data, partial=True
+            )
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+        return Response(serializer.data)
+
+
+# class SubscriptionViewSet(viewsets.ModelViewSet):
+#     """ Отображение подписок"""
+
+#     queryset = User.objects.all() #!
+#     serializer_class = SubscriptionSerializer
+#     lookup_field = "id"
+#     permission_classes = [IsAdmin | IsAuthenticatedOrReadOnly]
+
+
+    # @action(detail=True, methods=['POST'], url_path='subscribe')
+    # def subscribe_to(self, request, pk=None):
+    #     following = self.get_object()
+    #     follower = request.user
+    #     subscribe = Subscription.objects.get_or_create(following=following, follower=follower)
+    #     serializer = self.get_serializer(subscribe, many=False)
+    #     return Response(serializer.data) 
+
+    # @action(detail=True, methods=['DELETE'])
+    # def remove_favorite(self, request, pk=None):
+    #     recipe = self.get_object()
+    #     user = request.user
+
+    #     favorite = Favorite.objects.filter(recipe=recipe, user=user).delete()
+
+    #     return Response(status=204)
+
+
+class ProfileViewSet(viewsets.ModelViewSet):
+    pass
