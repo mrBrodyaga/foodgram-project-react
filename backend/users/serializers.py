@@ -61,14 +61,9 @@ class SubscribeToSerializer(serializers.ModelSerializer):
     def get_is_subscribed(self, obj):
         user = None
         request = self.context.get("request")
-        dir(request)
         if request and hasattr(request, "user"):
             user = request.user
-            print(user)
-            print(request)
         if not user:
-            print(user)
-            print(request)
             return False
         return Subscription.objects.filter(follower=user, following=obj).exists()
 

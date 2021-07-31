@@ -80,11 +80,9 @@ class UserViewSet(viewsets.ModelViewSet):
     
     @action(detail=True, methods=['DELETE'], url_path='subscribe')
     def subscribe_remove(self, request, *args, **kwargs):
-        following = get_object_or_404(User, id=self.kwargs['id'])
-        follower = request.user
-        subscribe, _ = Subscription.objects.get_or_create(following=following, follower=follower).delete() #!
-        serializer = SubscribeToSerializer(subscribe, context={'request': request})
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        following = get_object_or_404(User, id=self.kwargs["id"])
+        request.user.followings.filter(following=following).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
         methods=["patch", "get"],
