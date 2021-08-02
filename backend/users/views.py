@@ -78,7 +78,7 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = SubscribeToSerializer(following, context={'request': request})
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
-    @action(detail=True, methods=['DELETE'], url_path='subscribe')
+    @subscribe_to.mapping.delete
     def subscribe_remove(self, request, *args, **kwargs):
         following = get_object_or_404(User, id=self.kwargs["id"])
         request.user.followings.filter(following=following).delete()
@@ -101,34 +101,3 @@ class UserViewSet(viewsets.ModelViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.save()
         return Response(serializer.data)
-
-
-# class SubscriptionViewSet(viewsets.ModelViewSet):
-#     """ Отображение подписок"""
-
-#     queryset = User.objects.all() #!
-#     serializer_class = SubscriptionSerializer
-#     lookup_field = "id"
-#     permission_classes = [IsAdmin | IsAuthenticatedOrReadOnly]
-
-
-    # @action(detail=True, methods=['POST'], url_path='subscribe')
-    # def subscribe_to(self, request, pk=None):
-    #     following = self.get_object()
-    #     follower = request.user
-    #     subscribe = Subscription.objects.get_or_create(following=following, follower=follower)
-    #     serializer = self.get_serializer(subscribe, many=False)
-    #     return Response(serializer.data) 
-
-    # @action(detail=True, methods=['DELETE'])
-    # def remove_favorite(self, request, pk=None):
-    #     recipe = self.get_object()
-    #     user = request.user
-
-    #     favorite = Favorite.objects.filter(recipe=recipe, user=user).delete()
-
-    #     return Response(status=204)
-
-
-class ProfileViewSet(viewsets.ModelViewSet):
-    pass
