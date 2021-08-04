@@ -20,7 +20,6 @@ from .serializers import (
     # UserCodeSerializer,
     # UserEmailSerializer,
     SubscribeToSerializer,
-    SubscriptionSerializer,
     CustomUserSerializer,
 )
 
@@ -69,19 +68,37 @@ class UserViewSet(viewsets.ModelViewSet):
     lookup_field = "id"
     permission_classes = [IsAuthenticated]
 
-
     @action(detail=True, methods=['POST'], url_path='subscribe')
     def subscribe_to(self, request, *args, **kwargs):
         following = get_object_or_404(User, id=self.kwargs['id'])
         follower = request.user
-        subscribe, _ = Subscription.objects.get_or_create(following=following, follower=follower)
-        serializer = SubscribeToSerializer(following, context={'request': request})
+        if following == follower:
+            return Response({"errors": "Нельзя подписаться на себя самого"}, status=status.HTTP_400_BAD_REQUEST)
+        # проверяем пользователя на то, подписан ли он
+        # если подписан, то ругаемся
+        if Subscription.objects.filter(follower=follower, following=following).exists():
+            return Response({"errors": f"вы уже подписаны на {following}"},
+                     status=status.HTTP_400_BAD_REQUEST)
+        # в данном случае, мы знаем, что юзер не подписан и создаем подписку
+        subscribe, _ = Subscription.objects.get_or_create(
+            following=following, follower=follower)
+        # создаем сериалайзер и передаем туда запрашиваюшего пользователя
+        serializer = SubscribeToSerializer(
+            following, context={"requester": follower})
+        # возвращаем инфу из сериалайзера
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    
+
     @subscribe_to.mapping.delete
     def subscribe_remove(self, request, *args, **kwargs):
         following = get_object_or_404(User, id=self.kwargs["id"])
+        follower = request.user
+
+        if not Subscription.objects.filter(follower=follower, following=following).exists():
+            return Response({"errors": f"вы не подписаны на {following}"},
+                     status=status.HTTP_400_BAD_REQUEST)
+        # удаляем подписку
         request.user.followings.filter(following=following).delete()
+
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(

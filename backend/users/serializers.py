@@ -11,12 +11,9 @@ class CustomUserSerializer(UserSerializer):
     is_subscribed = serializers.SerializerMethodField()
 
     def get_is_subscribed(self, obj):
-        user = None
         request = self.context.get("request")
-        if request and hasattr(request, "user"):
-            user = request.user
-        if not user:
-            return False
+        user = request.user
+
         return Subscription.objects.filter(follower=user, following=obj).exists()
 
     class Meta:
@@ -55,24 +52,21 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 class SubscribeToSerializer(serializers.ModelSerializer):
     """Сериализуем подписки"""
     recipes_count = serializers.SerializerMethodField()
-    recipe = serializers.SerializerMethodField()
+    recipes = serializers.SerializerMethodField()
     is_subscribed = serializers.SerializerMethodField()
 
     def get_is_subscribed(self, obj):
-        user = None
-        request = self.context.get("request")
-        if request and hasattr(request, "user"):
-            user = request.user
-        if not user:
+        requester = self.context.get("requester")
+        if not requester:
             return False
-        return Subscription.objects.filter(follower=user, following=obj).exists()
+        return Subscription.objects.filter(follower=requester, following=obj).exists()
 
     def get_recipes_count(self, obj):
         author_id = obj.id
-        count = Recipe.objects.filter(id=author_id).count()
+        count = Recipe.objects.filter(author_id=author_id).count() #! вытягивать id автора
         return count
 
-    def get_recipe(self, obj):
+    def get_recipes(self, obj):
         author_id = obj.id
         qs = Recipe.objects.filter(id=author_id)
         return RecipeSubscriptionSerializer(qs, many=True).data
@@ -86,6 +80,6 @@ class SubscribeToSerializer(serializers.ModelSerializer):
             "first_name",
             "last_name",
             "is_subscribed",
-            'recipe',
+            'recipes',
             'recipes_count',
         )
