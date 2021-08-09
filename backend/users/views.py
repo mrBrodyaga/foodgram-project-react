@@ -21,6 +21,7 @@ from .serializers import (
     # UserEmailSerializer,
     SubscribeToSerializer,
     CustomUserSerializer,
+    SubscriptionSerializer,
 )
 
 
@@ -118,3 +119,12 @@ class UserViewSet(viewsets.ModelViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.save()
         return Response(serializer.data)
+
+
+    @action(detail=False, methods=['GET'], url_path='subscriptions')
+    def get_subscriptions(self, request, *args, **kwargs):
+        follower = request.user
+        subscribers = follower.subscribers.all()
+        serializer = SubscribeToSerializer(subscribers, many=True, context={"requester": follower})
+        return Response(serializer.data)
+        

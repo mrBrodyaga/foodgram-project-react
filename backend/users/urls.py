@@ -6,9 +6,6 @@ from .views import UserViewSet
 router = DefaultRouter()
 router.register("users", UserViewSet)
 router.register(
-    r"users/subscriptions/", UserViewSet, basename="subscription"
-),
-router.register(
     r"users/(?P<user_id>\d+)/subscribe/?", UserViewSet, basename="subscribe"
 ),
 

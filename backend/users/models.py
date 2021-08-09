@@ -1,15 +1,18 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+
 class User(AbstractUser):
     username = models.CharField(max_length=50, blank=False, unique=True)
     password = models.CharField(max_length=100, blank=False)
     email = models.EmailField(unique=True, blank=False)
     first_name = models.TextField(max_length=256, blank=True)
     last_name = models.TextField(max_length=256, blank=True)
-    
+    subscribers = models.ManyToManyField(
+        'User', through='Subscription', through_fields=('follower', 'following'), )
+
     class Meta:
-       ordering = ["id"]
+        ordering = ["id"]
 
 
 class Subscription(models.Model):
@@ -22,7 +25,7 @@ class Subscription(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['follower', 'following'], 
+            models.UniqueConstraint(fields=['follower', 'following'],
                                     name='subscription_unique'),
         ]
         verbose_name = 'Подписка'

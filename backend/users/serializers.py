@@ -63,12 +63,12 @@ class SubscribeToSerializer(serializers.ModelSerializer):
 
     def get_recipes_count(self, obj):
         author_id = obj.id
-        count = Recipe.objects.filter(author_id=author_id).count() #! вытягивать id автора
+        count = Recipe.objects.filter(author_id=author_id).count()
         return count
 
     def get_recipes(self, obj):
         author_id = obj.id
-        qs = Recipe.objects.filter(id=author_id)
+        qs = Recipe.objects.filter(author_id=author_id)
         return RecipeSubscriptionSerializer(qs, many=True).data
 
     class Meta:
