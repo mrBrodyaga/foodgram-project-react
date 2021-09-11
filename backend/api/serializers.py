@@ -33,8 +33,8 @@ class FavoriteSerializer(serializers.ModelSerializer):
     """ Сериализуем избранное"""
 
     class Meta:
-        fields = '__all__'
-        model = Favorite
+        fields = ('id', 'name', 'image', 'cooking_time')
+        model = Recipe
 
 
 class ShoppingCartSerializer(serializers.ModelSerializer):

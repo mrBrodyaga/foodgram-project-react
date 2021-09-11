@@ -4,6 +4,8 @@ from django.contrib.auth import get_user_model
 #from django.db.models import constraints
 from django.core.validators import MinValueValidator
 
+#from users.models import User #?
+
 User = get_user_model()
 
 
@@ -49,7 +51,7 @@ class Recipe(models.Model):
 class Favorite(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="favorites", verbose_name='Пользователь'
-    )
+    ) #! тут имена с одинаковым названием эт норм?
     recipe = models.ForeignKey(
         Recipe, on_delete=models.CASCADE, related_name="favorites", verbose_name='Рецепт'
     )

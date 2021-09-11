@@ -134,7 +134,7 @@ AUTH_USER_MODEL = "users.User"
 
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.IsAuthenticated",
+        "rest_framework.permissions.IsAuthenticatedOrReadOnly",
     ],
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
@@ -160,3 +160,10 @@ SIMPLE_JWT = {
 # SEND_FROM_EMAIL = "Foodgram"
 
 AUTH_USER_MODEL = 'users.User'
+
+DJOSER = {
+    'SERIALIZERS': {
+        'user_create': 'users.serializers.CustomUserSerializer',
+        'user': 'users.serializers.CustomUserSerializer',
+    },
+}

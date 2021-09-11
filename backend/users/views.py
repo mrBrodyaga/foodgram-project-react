@@ -61,15 +61,15 @@ from .serializers import (
 #     )
 
 
-class UserViewSet(viewsets.ModelViewSet):
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
     """ Получаем информацию по пользователю """
 
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer
     lookup_field = "id"
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
-    @action(detail=True, methods=['POST'], url_path='subscribe')
+    @action(detail=True, methods=['POST'], permission_classes=[IsAuthenticated], url_path='subscribe')
     def subscribe_to(self, request, *args, **kwargs):
         following = get_object_or_404(User, id=self.kwargs['id'])
         follower = request.user
@@ -79,7 +79,7 @@ class UserViewSet(viewsets.ModelViewSet):
         # если подписан, то ругаемся
         if Subscription.objects.filter(follower=follower, following=following).exists():
             return Response({"errors": f"вы уже подписаны на {following}"},
-                     status=status.HTTP_400_BAD_REQUEST)
+                            status=status.HTTP_400_BAD_REQUEST)
         # в данном случае, мы знаем, что юзер не подписан и создаем подписку
         subscribe, _ = Subscription.objects.get_or_create(
             following=following, follower=follower)
@@ -96,7 +96,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
         if not Subscription.objects.filter(follower=follower, following=following).exists():
             return Response({"errors": f"вы не подписаны на {following}"},
-                     status=status.HTTP_400_BAD_REQUEST)
+                            status=status.HTTP_400_BAD_REQUEST)
         # удаляем подписку
         request.user.followings.filter(following=following).delete()
 
@@ -120,11 +120,10 @@ class UserViewSet(viewsets.ModelViewSet):
             serializer.save()
         return Response(serializer.data)
 
-
-    @action(detail=False, methods=['GET'], url_path='subscriptions')
+    @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated], url_path='subscriptions')
     def get_subscriptions(self, request, *args, **kwargs):
         follower = request.user
         subscribers = follower.subscribers.all()
-        serializer = SubscribeToSerializer(subscribers, many=True, context={"requester": follower})
+        serializer = SubscribeToSerializer(
+            subscribers, many=True, context={"requester": follower})
         return Response(serializer.data)
-        
