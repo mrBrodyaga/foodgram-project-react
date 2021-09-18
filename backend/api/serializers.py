@@ -14,9 +14,17 @@ class TagSerializer(serializers.ModelSerializer):
 class RecipeSerializer(serializers.ModelSerializer):
     """ Сериализуем рецепты"""
     tags = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    is_favorited = serializers.SerializerMethodField()
+
+    def get_is_favorited(self, obj):
+        request = self.context.get("request")
+        user = request.user
+
+        return Favorite.objects.filter(user=user, recipe=obj).exists()
 
     class Meta:
-        fields = '__all__'
+        fields = ('id', 'tags', 'author', 'ingredients', 'is_favorited',
+                  'name', 'image', 'text', 'text', 'cooking_time')
         model = Recipe
         depth = 2
 
@@ -41,5 +49,5 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
     """ Сериализуем список покупок"""
 
     class Meta:
-        fields = '__all__'
-        model = ShoppingCart
+        fields = ('id', 'name', 'image', 'cooking_time')
+        model = Recipe

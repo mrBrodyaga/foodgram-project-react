@@ -1,15 +1,19 @@
 from django.contrib import admin
 from .models import Recipe, Favorite, Ingredient, Recipeingredient, Tag
 
+#! Вывести все модели с возможностью редактирования и удаление записей
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     """ Регестируем модель рецептов"""
 
-    list_display = ('author', 'name')
+    list_display = ('author', 'name', ) # 'number_of_favorites'
     list_filter = ('author', 'name', 'tags')
     empty_value_display = '-пусто-'
-# На странице рецепта вывести общее число добавлений этого рецепта в избранное.
+# #! На странице рецепта вывести общее число добавлений этого рецепта в избранное.
+#     @admin.display(empty_value=None)
+#     def number_of_favorites(self, obj):
+#         return obj.is_favorite.all().count() #! не пойму что после obj
 
 @admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):

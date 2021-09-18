@@ -23,11 +23,12 @@ from .serializers import (
 )
 
 
-class CDLRGenericViewSet(
+class CDLRUGenericViewSet(
     mixins.CreateModelMixin,
     mixins.DestroyModelMixin,
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
     GenericViewSet,
 ):
     pass
@@ -53,7 +54,7 @@ class TagViewSet(
     ]
 
 
-class RecipeViewSet(CDLRGenericViewSet):
+class RecipeViewSet(CDLRUGenericViewSet):
     """ Отображение рецептов """
 
     queryset = Recipe.objects.all()
@@ -72,7 +73,7 @@ class RecipeViewSet(CDLRGenericViewSet):
     def add_favourites(self, request, *args, **kwargs):
         recipe = get_object_or_404(Recipe, id=self.kwargs['id'])
         user = request.user
-        
+
         if Favorite.objects.filter(user=user, recipe=recipe).exists():
             return Response({"errors": f"Рецепт уже есть в избранном"},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -83,7 +84,7 @@ class RecipeViewSet(CDLRGenericViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @add_favourites.mapping.delete
-    def subscribe_remove(self, request, *args, **kwargs):
+    def favorites_remove(self, request, *args, **kwargs):
         recipe = get_object_or_404(Recipe, id=self.kwargs['id'])
         user = request.user
 
@@ -93,6 +94,62 @@ class RecipeViewSet(CDLRGenericViewSet):
         request.user.favorites.filter(recipe=recipe).delete()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+    @action(detail=True, methods=['POST'], permission_classes=[IsAuthenticated], url_path='shopping_cart')
+    def add_in_shopping_cart(self, request, *args, **kwargs):
+        recipe = get_object_or_404(Recipe, id=self.kwargs['id'])
+        user = request.user
+
+        if ShoppingCart.objects.filter(user=user, recipe=recipe).exists():
+            return Response({"errors": f"Рецепт уже есть в списке покупок"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        shopping_cart, _ = ShoppingCart.objects.get_or_create(user=user, recipe=recipe)
+        serializer = ShoppingCartSerializer(
+            recipe, context={"request": request})
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @add_in_shopping_cart.mapping.delete
+    def remove_in_shopping_cart(self, request, *args, **kwargs):
+        recipe = get_object_or_404(Recipe, id=self.kwargs['id'])
+        user = request.user
+
+        if not ShoppingCart.objects.filter(user=user, recipe=recipe).exists():
+            return Response({"errors": f"Рецепта нет в списке покупок"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        request.user.shop_list.filter(recipe=recipe).delete()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+    @action(detail=True, methods=['GET'], permission_classes=[IsAuthenticated], url_path='download_shopping_cart')
+    def download_shopping_cart(self, request):
+        user = request.user
+        shopping_cart = user.shop_list.all()
+        shopping_list = {}
+        for record in shopping_cart:
+            recipe = record.recipe
+            ingredients = Recipeingredient.objects.filter(recipe=recipe)
+            for ingredient in ingredients:
+                amount = ingredient.amount
+                name = ingredient.ingredient.name
+                dimension = ingredient.ingredient.dimension
+                if name not in shopping_list:
+                    shopping_list[name] = {
+                        'dimension': dimension,
+                        'amount': amount
+                    }
+                else:
+                    shopping_list[name]['amount'] = (shopping_list[name]['amount']
+                                                + amount)
+        wishlist = []
+        for name, data in shopping_list.items():
+            wishlist.append(
+                f"{name} - {data['amount']} ({data['dimension']} \n")
+        response = Response(wishlist, content_type='text/plain')
+        response['Content-Disposition'] = 'attachment; filename="wishlist.txt"'
+        return response
 
 
 class IngredientViewSet(
@@ -122,12 +179,13 @@ class IngredientViewSet(
 #     permission_classes = [IsAuthorOrAdminOrReadOnly,]
 
 
-class ShoppingCartViewSet(CDLRGenericViewSet):
-    queryset = ShoppingCart.objects.all()
-    serializer_class = ShoppingCartSerializer
-    permission_classes = [IsAdminOrReadOnly]
-    filter_backends = [filters.SearchFilter]
-
-
-class DowShoppingCartViewSet(CDLRGenericViewSet):
-    pass
+# class ShoppingCartViewSet(
+#     mixins.DestroyModelMixin,
+#     mixins.ListModelMixin,
+#     mixins.RetrieveModelMixin,
+#     GenericViewSet,
+#     ):
+#     queryset = ShoppingCart.objects.all()
+#     serializer_class = ShoppingCartSerializer
+#     permission_classes = [IsAdminOrReadOnly]
+#     filter_backends = [filters.SearchFilter]
