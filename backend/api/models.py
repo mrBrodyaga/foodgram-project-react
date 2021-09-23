@@ -54,7 +54,7 @@ class Recipe(models.Model):
 class Favorite(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="favorites", verbose_name='Пользователь'
-    ) #! тут имена с одинаковым названием эт норм?
+    )
     recipe = models.ForeignKey(
         Recipe, on_delete=models.CASCADE, related_name="favorites", verbose_name='Рецепт'
     )
@@ -74,12 +74,12 @@ class Favorite(models.Model):
 
 
 class Ingredient(models.Model):
-    title = models.CharField(max_length=100, verbose_name='Название')
-    dimension = models.CharField(
+    name = models.CharField(max_length=100, verbose_name='Название')
+    measurement_unit = models.CharField(
         max_length=50, verbose_name='Единицы измерения')
 
     class Meta:
-        ordering = ('title', )
+        ordering = ('name', )
         verbose_name = 'Ингридиент'
         verbose_name_plural = 'Ингридиенты'
 

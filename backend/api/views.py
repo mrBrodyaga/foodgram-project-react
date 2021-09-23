@@ -134,13 +134,13 @@ class RecipeViewSet(CDLRUGenericViewSet):
             recipe = record.recipe
             ingredients = Recipeingredient.objects.filter(recipe=recipe)
             for ingredient in ingredients:
-                print("Ingredient", ingredient.ingredient.title)
+                print("Ingredient", ingredient.ingredient.name)
                 amount = ingredient.amount
-                name = ingredient.ingredient.title
-                dimension = ingredient.ingredient.dimension
+                name = ingredient.ingredient.name
+                measurement_unit = ingredient.ingredient.measurement_unit
                 if name not in shopping_list:
                     shopping_list[name] = {
-                        'dimension': dimension,
+                        'measurement_unit': measurement_unit,
                         'amount': amount
                     }
                 else:
@@ -149,7 +149,7 @@ class RecipeViewSet(CDLRUGenericViewSet):
         wishlist = []
         for name, data in shopping_list.items():
             wishlist.append(
-                f"{name} - {data['amount']} ({data['dimension']})")
+                f"{name} - {data['amount']} ({data['measurement_unit']})")
         response = Response("\n".join(wishlist), content_type='text/plain')
         response['Content-Disposition'] = 'attachment; filename="wishlist.txt"'
         return response
@@ -169,5 +169,5 @@ class IngredientViewSet(
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     filter_class = IngridientFilter
     search_fields = [
-        "title",
+        "name",
     ]

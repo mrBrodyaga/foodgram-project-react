@@ -31,7 +31,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = ('id', 'tags', 'author', 'ingredients', 'is_favorited', 'is_in_shopping_cart',
-                  'name', 'image', 'text', 'text', 'cooking_time')
+                  'name', 'image', 'text', 'cooking_time')
         model = Recipe
         depth = 2
 

@@ -17,8 +17,8 @@ class RecipeAdmin(admin.ModelAdmin):
 class IngredientAdmin(admin.ModelAdmin):
     """ Регестируем модель ингридиентов"""
 
-    list_display = ('title', 'dimension')
-    list_filter = ('title',)
+    list_display = ('name', 'measurement_unit')
+    list_filter = ('name',)
     empty_value_display = '-пусто-'
 
 @admin.register(Tag)
