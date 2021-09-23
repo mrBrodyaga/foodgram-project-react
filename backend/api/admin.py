@@ -1,19 +1,17 @@
 from django.contrib import admin
-from .models import Recipe, Favorite, Ingredient, Recipeingredient, Tag
+from .models import Recipe, Favorite, Ingredient, Recipeingredient, ShoppingCart, Tag
 
-#! Вывести все модели с возможностью редактирования и удаление записей
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     """ Регестируем модель рецептов"""
 
-    list_display = ('author', 'name', ) # 'number_of_favorites'
+    list_display = ('author', 'name', 'number_of_favorites')
     list_filter = ('author', 'name', 'tags')
     empty_value_display = '-пусто-'
-# #! На странице рецепта вывести общее число добавлений этого рецепта в избранное.
-#     @admin.display(empty_value=None)
-#     def number_of_favorites(self, obj):
-#         return obj.is_favorite.all().count() #! не пойму что после obj
+
+    def number_of_favorites(self, obj):
+        return obj.favorites.all().count()
 
 @admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
@@ -29,4 +27,28 @@ class TagAdmin(admin.ModelAdmin):
 
     list_display = ('title', 'slug', 'color')
     list_filter = ('title',)
+    empty_value_display = '-пусто-'
+
+@admin.register(Favorite)
+class FavoriteAdmin(admin.ModelAdmin):
+    """ Регестируем модель избранного"""
+
+    list_display = ('user', 'recipe')
+    list_filter = ('user',)
+    empty_value_display = '-пусто-'
+
+@admin.register(ShoppingCart)
+class ShoppingCartAdmin(admin.ModelAdmin):
+    """ Регестируем модель списка покупок"""
+
+    list_display = ('user', 'recipe')
+    list_filter = ('user',)
+    empty_value_display = '-пусто-'
+
+@admin.register(Recipeingredient)
+class  RecipeingredientAdmin(admin.ModelAdmin):
+    """ Регестируем модель рецептов"""
+
+    list_display = ('ingredient', 'recipe', 'amount')
+    list_filter = ('ingredient', 'recipe')
     empty_value_display = '-пусто-'

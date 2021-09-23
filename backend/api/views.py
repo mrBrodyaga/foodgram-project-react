@@ -6,10 +6,11 @@ from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnl
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
 
 from api.models import Recipe, Ingredient, Favorite, Tag, Recipeingredient, ShoppingCart
 
-#from .filters import TitlesFilter
+from .filters import RecipeFilter, IngridientFilter
 from .permissions import (
     IsAdminOrReadOnly,
     IsAuthorOrAdminOrReadOnly,
@@ -60,11 +61,11 @@ class RecipeViewSet(CDLRUGenericViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     permission_classes = [
-        IsAuthorOrAdminOrReadOnly,
-        IsAuthenticatedOrReadOnly,
+        IsAuthenticated,
     ]
     lookup_field = "id"
-    filter_backends = [filters.SearchFilter]
+    filter_backends = [filters.SearchFilter, DjangoFilterBackend]
+    filterset_class = RecipeFilter
     search_fields = [
         "=name",
     ]
@@ -123,17 +124,19 @@ class RecipeViewSet(CDLRUGenericViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-    @action(detail=True, methods=['GET'], permission_classes=[IsAuthenticated], url_path='download_shopping_cart')
+    @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated], url_path='download_shopping_cart')
     def download_shopping_cart(self, request):
         user = request.user
         shopping_cart = user.shop_list.all()
         shopping_list = {}
         for record in shopping_cart:
+            print("Recipe:", record.recipe)
             recipe = record.recipe
             ingredients = Recipeingredient.objects.filter(recipe=recipe)
             for ingredient in ingredients:
+                print("Ingredient", ingredient.ingredient.title)
                 amount = ingredient.amount
-                name = ingredient.ingredient.name
+                name = ingredient.ingredient.title
                 dimension = ingredient.ingredient.dimension
                 if name not in shopping_list:
                     shopping_list[name] = {
@@ -146,8 +149,8 @@ class RecipeViewSet(CDLRUGenericViewSet):
         wishlist = []
         for name, data in shopping_list.items():
             wishlist.append(
-                f"{name} - {data['amount']} ({data['dimension']} \n")
-        response = Response(wishlist, content_type='text/plain')
+                f"{name} - {data['amount']} ({data['dimension']})")
+        response = Response("\n".join(wishlist), content_type='text/plain')
         response['Content-Disposition'] = 'attachment; filename="wishlist.txt"'
         return response
 
@@ -163,29 +166,8 @@ class IngredientViewSet(
     serializer_class = IngredientSerializer
     permission_classes = [IsAdminOrReadOnly]
     lookup_field = "id"
-    filter_backends = [filters.SearchFilter]
+    filter_backends = [filters.SearchFilter, DjangoFilterBackend]
+    filter_class = IngridientFilter
     search_fields = [
-        "=title",
+        "title",
     ]
-
-# class FavoriteViewSet(
-#     mixins.CreateModelMixin,
-#     mixins.DestroyModelMixin,
-#     GenericViewSet,):
-#     """ Отображение избранного """
-
-#     queryset = Favorite.objects.get_or_create()
-#     serializer_class = FavoriteSerializer
-#     permission_classes = [IsAuthorOrAdminOrReadOnly,]
-
-
-# class ShoppingCartViewSet(
-#     mixins.DestroyModelMixin,
-#     mixins.ListModelMixin,
-#     mixins.RetrieveModelMixin,
-#     GenericViewSet,
-#     ):
-#     queryset = ShoppingCart.objects.all()
-#     serializer_class = ShoppingCartSerializer
-#     permission_classes = [IsAdminOrReadOnly]
-#     filter_backends = [filters.SearchFilter]

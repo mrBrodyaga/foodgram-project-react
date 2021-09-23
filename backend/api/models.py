@@ -38,6 +38,9 @@ class Recipe(models.Model):
         auto_now_add=True, db_index=True, verbose_name='Дата публикации')
     tags = models.ManyToManyField(Tag, related_name='tags')
     ingredients = models.ManyToManyField('Ingredient', through='Recipeingredient')
+    favorited_by = models.ManyToManyField(User, through='Favorite', related_name='favorite_recipes')
+    is_in_shopping_cart = models.ManyToManyField(
+        User, through='ShoppingCart', related_name="recipes_in_shopping_cart")
 
     class Meta:
         ordering = ('-pub_date', )
@@ -106,5 +109,3 @@ class ShoppingCart(models.Model):
     )
     recipe = models.ForeignKey(
         Recipe, on_delete=models.CASCADE, related_name='shop_list')
-    amount = models.FloatField(verbose_name='Количество', validators=[
-                               MinValueValidator(0), ], )

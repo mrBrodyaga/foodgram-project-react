@@ -1,10 +1,11 @@
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
+from djoser.serializers import PasswordSerializer
 
 from rest_framework import status, viewsets
 from rest_framework.decorators import action, api_view
-from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework_simplejwt import tokens
 
@@ -14,10 +15,11 @@ from rest_framework_simplejwt import tokens
 #     SEND_FROM_EMAIL,
 # )
 
+from djoser.conf import settings
+
 from .models import Subscription, User
 from .permissions import IsAdmin
 from .serializers import (
-    # UserCodeSerializer,
     # UserEmailSerializer,
     SubscribeToSerializer,
     CustomUserSerializer,

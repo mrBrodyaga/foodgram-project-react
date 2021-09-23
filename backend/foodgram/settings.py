@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework.authtoken',
     'rest_framework',
+    'django_filters',
     'djoser',
     'users',
     'api',
@@ -148,9 +149,9 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-   'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
-   'AUTH_HEADER_TYPES': ('Bearer',),
-} 
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
 
 # EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
 # EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")
@@ -165,5 +166,9 @@ DJOSER = {
     'SERIALIZERS': {
         'user_create': 'users.serializers.CustomUserSerializer',
         'user': 'users.serializers.CustomUserSerializer',
+        'set_password': 'users.serializers.CustomSetPasswordSerializer',
     },
+    "PERMISSIONS": {
+        'user_create': ['rest_framework.permissions.AllowAny'],
+    }
 }

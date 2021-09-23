@@ -1,20 +1,25 @@
-from api.serializers import RecipeSerializer
 from api.models import Recipe
 from rest_framework import serializers
 from djoser.serializers import UserSerializer
+from contextlib import suppress
 
 from .models import Subscription, User
 
 
 class CustomUserSerializer(UserSerializer):
-    """Сериализуем Пользователя для получеяния информации о нём"""
+    """Сериализуем Пользователя для получения информации о нём"""
     is_subscribed = serializers.SerializerMethodField()
 
     def get_is_subscribed(self, obj):
         request = self.context.get("request")
         user = request.user
 
-        return Subscription.objects.filter(follower=user, following=obj).exists()
+        is_subscribed = False
+
+        with suppress(TypeError):
+            is_subscribed = Subscription.objects.filter(follower=user, following=obj).exists()
+
+        return is_subscribed
 
     class Meta:
         model = User
@@ -83,3 +88,9 @@ class SubscribeToSerializer(serializers.ModelSerializer):
             'recipes',
             'recipes_count',
         )
+
+class CustomSetPasswordSerializer(serializers.Serializer):
+    """Сериализуем информацию для изменения пароля"""
+
+    new_password = serializers.CharField(required=True)
+    current_password = serializers.CharField(required=True)
