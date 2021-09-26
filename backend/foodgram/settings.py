@@ -26,7 +26,7 @@ SECRET_KEY = '0lt=-te0z(mkhdz527_h%5c7v(0@dighg!&@+)osr+v@z=z8vn'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['62.84.120.188', 'localhost', "*"]
 
 
 # Application definition
@@ -82,8 +82,12 @@ WSGI_APPLICATION = 'foodgram.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': os.environ.get('DB_ENGINE'),
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('POSTGRES_USER'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST'),
+        'PORT': os.environ.get('DB_PORT'),
     }
 }
 
@@ -152,13 +156,6 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
-
-# EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
-# EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")
-
-# CONFIRMATION_SUBJECT = "Код потверждения на Foodgram"
-# CONFIRMATION_MESSAGE = "Ваш код, не теряйте его:"
-# SEND_FROM_EMAIL = "Foodgram"
 
 AUTH_USER_MODEL = 'users.User'
 
