@@ -1,26 +1,23 @@
-from users.models import User
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
-from rest_framework import filters, mixins, status
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
-from rest_framework.viewsets import GenericViewSet, ModelViewSet
-from rest_framework.decorators import action
-from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, mixins, status
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.response import Response
+from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
-from api.models import Recipe, Ingredient, Favorite, Tag, Recipeingredient, ShoppingCart
+from api.models import Favorite, Ingredient, Recipe, Recipeingredient, ShoppingCart, Tag
+from users.models import User
 
-from .filters import RecipeFilter, IngridientFilter
-from .permissions import (
-    IsAdminOrReadOnly,
-    IsAuthorOrAdminOrReadOnly,
-)
+from .filters import IngridientFilter, RecipeFilter
+from .permissions import IsAdminOrReadOnly, IsAuthorOrAdminOrReadOnly
 from .serializers import (
-    RecipeSerializer,
-    IngredientSerializer,
     FavoriteSerializer,
-    TagSerializer,
+    IngredientSerializer,
+    RecipeSerializer,
     ShoppingCartSerializer,
+    TagSerializer,
 )
 
 

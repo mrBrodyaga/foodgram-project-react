@@ -1,7 +1,9 @@
-from api.models import Recipe
-from rest_framework import serializers
-from djoser.serializers import UserSerializer
 from contextlib import suppress
+
+from djoser.serializers import UserSerializer
+from rest_framework import serializers
+
+from api.models import Recipe
 
 from .models import Subscription, User
 

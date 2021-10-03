@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Recipe, Favorite, Ingredient, Recipeingredient, ShoppingCart, Tag
+
+from .models import Favorite, Ingredient, Recipe, Recipeingredient, ShoppingCart, Tag
 
 
 @admin.register(Recipe)
@@ -13,6 +14,7 @@ class RecipeAdmin(admin.ModelAdmin):
     def number_of_favorites(self, obj):
         return obj.favorites.all().count()
 
+
 @admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
     """ Регестируем модель ингридиентов"""
@@ -20,6 +22,7 @@ class IngredientAdmin(admin.ModelAdmin):
     list_display = ('name', 'measurement_unit')
     list_filter = ('name',)
     empty_value_display = '-пусто-'
+
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
@@ -29,6 +32,7 @@ class TagAdmin(admin.ModelAdmin):
     list_filter = ('title',)
     empty_value_display = '-пусто-'
 
+
 @admin.register(Favorite)
 class FavoriteAdmin(admin.ModelAdmin):
     """ Регестируем модель избранного"""
@@ -36,6 +40,7 @@ class FavoriteAdmin(admin.ModelAdmin):
     list_display = ('user', 'recipe')
     list_filter = ('user',)
     empty_value_display = '-пусто-'
+
 
 @admin.register(ShoppingCart)
 class ShoppingCartAdmin(admin.ModelAdmin):
@@ -45,8 +50,9 @@ class ShoppingCartAdmin(admin.ModelAdmin):
     list_filter = ('user',)
     empty_value_display = '-пусто-'
 
+
 @admin.register(Recipeingredient)
-class  RecipeingredientAdmin(admin.ModelAdmin):
+class RecipeingredientAdmin(admin.ModelAdmin):
     """ Регестируем модель рецептов"""
 
     list_display = ('ingredient', 'recipe', 'amount')

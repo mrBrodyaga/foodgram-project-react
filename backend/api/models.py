@@ -1,10 +1,6 @@
-#from django.contrib.admin.decorators import display
-from django.db import models
 from django.contrib.auth import get_user_model
-#from django.db.models import constraints
 from django.core.validators import MinValueValidator
-
-#from users.models import User #?
+from django.db import models
 
 User = get_user_model()
 
@@ -33,7 +29,7 @@ class Recipe(models.Model):
         upload_to="recipes/images/", blank=True, null=True, verbose_name='Картинка')
     text = models.TextField(verbose_name='Текст')
     cooking_time = models.PositiveIntegerField(
-        validators= [MinValueValidator(1)])  # verbose_name='Время приготовления'
+        validators=[MinValueValidator(1)])  # verbose_name='Время приготовления'
     pub_date = models.DateTimeField(
         auto_now_add=True, db_index=True, verbose_name='Дата публикации')
     tags = models.ManyToManyField(Tag, related_name='tags')

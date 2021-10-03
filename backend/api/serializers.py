@@ -1,7 +1,10 @@
 from rest_framework import serializers
 
-from .models import Tag, Recipe, Ingredient, Favorite, Recipeingredient, ShoppingCart
 from users.serializers import CustomUserSerializer
+
+from .models import Favorite, Ingredient, Recipe, Recipeingredient, ShoppingCart, Tag
+
+
 class TagSerializer(serializers.ModelSerializer):
     """ Сериализуем Теги"""
 
