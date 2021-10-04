@@ -2,19 +2,20 @@ from rest_framework import serializers
 
 from users.serializers import CustomUserSerializer
 
-from .models import Favorite, Ingredient, Recipe, Recipeingredient, ShoppingCart, Tag
+from .models import Favorite, Ingredient, Recipe, Tag
 
 
 class TagSerializer(serializers.ModelSerializer):
-    """ Сериализуем Теги"""
+    """Сериализуем Теги"""
 
     class Meta:
-        fields = '__all__'
+        fields = "__all__"
         model = Tag
 
 
 class RecipeSerializer(serializers.ModelSerializer):
-    """ Сериализуем рецепты"""
+    """Сериализуем рецепты"""
+
     tags = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
@@ -33,31 +34,41 @@ class RecipeSerializer(serializers.ModelSerializer):
         return Favorite.objects.filter(user=user, recipe=obj).exists()
 
     class Meta:
-        fields = ('id', 'tags', 'author', 'ingredients', 'is_favorited', 'is_in_shopping_cart',
-                  'name', 'image', 'text', 'cooking_time')
+        fields = (
+            "id",
+            "tags",
+            "author",
+            "ingredients",
+            "is_favorited",
+            "is_in_shopping_cart",
+            "name",
+            "image",
+            "text",
+            "cooking_time",
+        )
         model = Recipe
         depth = 2
 
 
 class IngredientSerializer(serializers.ModelSerializer):
-    """ Сериализуем ингридиенты"""
+    """Сериализуем ингридиенты"""
 
     class Meta:
-        fields = '__all__'
+        fields = "__all__"
         model = Ingredient
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
-    """ Сериализуем избранное"""
+    """Сериализуем избранное"""
 
     class Meta:
-        fields = ('id', 'name', 'image', 'cooking_time')
+        fields = ("id", "name", "image", "cooking_time")
         model = Recipe
 
 
 class ShoppingCartSerializer(serializers.ModelSerializer):
-    """ Сериализуем список покупок"""
+    """Сериализуем список покупок"""
 
     class Meta:
-        fields = ('id', 'name', 'image', 'cooking_time')
+        fields = ("id", "name", "image", "cooking_time")
         model = Recipe

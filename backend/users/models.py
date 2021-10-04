@@ -9,7 +9,13 @@ class User(AbstractUser):
     first_name = models.TextField(max_length=256, blank=False)
     last_name = models.TextField(max_length=256, blank=False)
     subscribers = models.ManyToManyField(
-        'User', through='Subscription', through_fields=('follower', 'following'), )
+        "User",
+        through="Subscription",
+        through_fields=("follower", "following"),
+    )
+
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["username", "first_name", "last_name"]
 
     class Meta:
         ordering = ["id"]
@@ -17,16 +23,23 @@ class User(AbstractUser):
 
 class Subscription(models.Model):
     follower = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="followings", verbose_name='Подписчик'
+        User,
+        on_delete=models.CASCADE,
+        related_name="followings",
+        verbose_name="Подписчик",
     )
     following = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="followers", verbose_name='На кого подписка'
+        User,
+        on_delete=models.CASCADE,
+        related_name="followers",
+        verbose_name="На кого подписка",
     )
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['follower', 'following'],
-                                    name='subscription_unique'),
+            models.UniqueConstraint(
+                fields=["follower", "following"], name="subscription_unique"
+            ),
         ]
-        verbose_name = 'Подписка'
-        verbose_name_plural = 'Подписки'
+        verbose_name = "Подписка"
+        verbose_name_plural = "Подписки"

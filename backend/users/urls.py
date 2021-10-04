@@ -9,8 +9,9 @@ router.register(
     r"users/(?P<user_id>\d+)/subscribe/?", UserViewSet, basename="subscribe"
 ),
 
+
 urlpatterns = [
-    path("v1/", include(router.urls)),
-    path('v1/auth/', include('djoser.urls')),
-    path('v1/auth/', include('djoser.urls.jwt')),
+    path("", include(router.urls)),
+    path("auth/", include("djoser.urls")),
+    # path('auth/token/login/', views.TokenObtainPairView.as_view(), name="jwt-create"),
 ]

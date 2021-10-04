@@ -7,18 +7,22 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0002_auto_20210803_1951'),
+        ("api", "0002_auto_20210803_1951"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='recipe',
-            name='cooking_time',
-            field=models.PositiveIntegerField(validators=[django.core.validators.MinValueValidator(1)]),
+            model_name="recipe",
+            name="cooking_time",
+            field=models.PositiveIntegerField(
+                validators=[django.core.validators.MinValueValidator(1)]
+            ),
         ),
         migrations.AlterField(
-            model_name='tag',
-            name='title',
-            field=models.CharField(max_length=50, unique=True, verbose_name='Название'),
+            model_name="tag",
+            name="title",
+            field=models.CharField(
+                max_length=50, unique=True, verbose_name="Название"
+            ),
         ),
     ]

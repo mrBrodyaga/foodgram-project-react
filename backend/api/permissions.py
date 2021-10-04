@@ -1,4 +1,8 @@
-from rest_framework.permissions import SAFE_METHODS, BasePermission, IsAdminUser
+from rest_framework.permissions import (
+    SAFE_METHODS,
+    BasePermission,
+    IsAdminUser,
+)
 
 
 class IsAdminOrReadOnly(IsAdminUser):
@@ -19,6 +23,5 @@ class IsAuthorOrAdminOrReadOnly(BasePermission):
             return request.user and request.user.is_authenticated
 
         return request.user and (
-            request.user == obj.author
-            or request.user.is_admin
+            request.user == obj.author or request.user.is_admin
         )

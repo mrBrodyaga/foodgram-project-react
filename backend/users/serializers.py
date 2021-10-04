@@ -10,6 +10,7 @@ from .models import Subscription, User
 
 class CustomUserSerializer(UserSerializer):
     """Сериализуем Пользователя для получения информации о нём"""
+
     is_subscribed = serializers.SerializerMethodField()
 
     def get_is_subscribed(self, obj):
@@ -19,7 +20,9 @@ class CustomUserSerializer(UserSerializer):
         is_subscribed = False
 
         with suppress(TypeError):
-            is_subscribed = Subscription.objects.filter(follower=user, following=obj).exists()
+            is_subscribed = Subscription.objects.filter(
+                follower=user, following=obj
+            ).exists()
 
         return is_subscribed
 
@@ -53,11 +56,12 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Subscription
-        fields = '__all__'
+        fields = "__all__"
 
 
 class SubscribeToSerializer(serializers.ModelSerializer):
     """Сериализуем подписки"""
+
     recipes_count = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField()
     is_subscribed = serializers.SerializerMethodField()
@@ -66,7 +70,9 @@ class SubscribeToSerializer(serializers.ModelSerializer):
         requester = self.context.get("requester")
         if not requester:
             return False
-        return Subscription.objects.filter(follower=requester, following=obj).exists()
+        return Subscription.objects.filter(
+            follower=requester, following=obj
+        ).exists()
 
     def get_recipes_count(self, obj):
         author_id = obj.id
@@ -87,9 +93,10 @@ class SubscribeToSerializer(serializers.ModelSerializer):
             "first_name",
             "last_name",
             "is_subscribed",
-            'recipes',
-            'recipes_count',
+            "recipes",
+            "recipes_count",
         )
+
 
 class CustomSetPasswordSerializer(serializers.Serializer):
     """Сериализуем информацию для изменения пароля"""

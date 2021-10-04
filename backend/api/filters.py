@@ -4,13 +4,14 @@ from .models import Ingredient, Recipe
 
 
 class RecipeFilter(filters.FilterSet):
-    is_favorited = filters.BooleanFilter(method='filter_favorited')
+    is_favorited = filters.BooleanFilter(method="filter_favorited")
     is_in_shopping_cart = filters.BooleanFilter(
-        method='filter_is_in_shopping_cart')
+        method="filter_is_in_shopping_cart"
+    )
 
     class Meta:
         model = Recipe
-        fields = ['is_favorited']
+        fields = ["is_favorited"]
 
     def filter_favorited(self, queryset, name, value):
         user = self.request.user

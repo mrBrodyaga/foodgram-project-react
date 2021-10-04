@@ -6,15 +6,15 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0005_subscription'),
+        ("api", "0005_subscription"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='tag',
-            options={'verbose_name': 'Тег', 'verbose_name_plural': 'Теги'},
+            name="tag",
+            options={"verbose_name": "Тег", "verbose_name_plural": "Теги"},
         ),
         migrations.DeleteModel(
-            name='Subscription',
+            name="Subscription",
         ),
     ]

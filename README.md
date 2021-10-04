@@ -21,7 +21,7 @@ nginx
 - Установите зависимости из файла requirements.txt
 ```sh
 pip install -r requirements.txt
-``` 
+```
 - Поднять nginx для работы со статикой и db - postgresql - для работы с базой данных
 ```sh
 docker compose up -d db nginx
