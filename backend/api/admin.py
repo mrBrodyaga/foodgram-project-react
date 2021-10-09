@@ -35,8 +35,8 @@ class IngredientAdmin(admin.ModelAdmin):
 class TagAdmin(admin.ModelAdmin):
     """Регестируем модель тегов"""
 
-    list_display = ("title", "slug", "color")
-    list_filter = ("title",)
+    list_display = ("name", "slug", "color")
+    list_filter = ("name",)
     empty_value_display = "-пусто-"
 
 

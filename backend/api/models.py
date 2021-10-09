@@ -6,7 +6,7 @@ User = get_user_model()
 
 
 class Tag(models.Model):
-    title = models.CharField(
+    name = models.CharField(
         verbose_name="Название", max_length=50, unique=True
     )
     slug = models.SlugField(
@@ -137,3 +137,9 @@ class ShoppingCart(models.Model):
     recipe = models.ForeignKey(
         Recipe, on_delete=models.CASCADE, related_name="shop_list"
     )
+
+    class Meta:
+        verbose_name = "Корзина"
+
+    def __str__(self):
+        return f"{self.user} в {self.recipe}"

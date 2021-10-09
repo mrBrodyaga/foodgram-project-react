@@ -12,6 +12,5 @@ router.register(
 
 urlpatterns = [
     path("", include(router.urls)),
-    path("auth/", include("djoser.urls")),
-    # path('auth/token/login/', views.TokenObtainPairView.as_view(), name="jwt-create"),
+    path("auth/", include("djoser.urls.authtoken")),
 ]

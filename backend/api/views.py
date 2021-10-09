@@ -56,7 +56,7 @@ class TagViewSet(
     lookup_field = "id"
     filter_backends = [filters.SearchFilter]
     search_fields = [
-        "=title",
+        "=name",
     ]
 
 
