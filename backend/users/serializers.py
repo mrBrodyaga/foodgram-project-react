@@ -1,11 +1,17 @@
 from contextlib import suppress
 
-from djoser.serializers import UserSerializer
+from djoser.serializers import UserSerializer, UserCreateSerializer
 from rest_framework import serializers
 
 from api.models import Recipe
 
 from .models import Subscription, User
+
+
+class CustomUserCreateSerializer(UserCreateSerializer):
+    class Meta:
+        model = User
+        fields = ["username", "password", "email", "first_name", "last_name"]
 
 
 class CustomUserSerializer(UserSerializer):

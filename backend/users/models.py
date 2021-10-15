@@ -3,8 +3,7 @@ from django.db import models
 
 
 class User(AbstractUser):
-    username = models.CharField(max_length=50, blank=False, unique=True)
-    password = models.CharField(max_length=100, blank=False, unique=True)
+    password = models.CharField('password', max_length=128)
     email = models.EmailField(unique=True, blank=False)
     first_name = models.TextField(max_length=256, blank=False)
     last_name = models.TextField(max_length=256, blank=False)
@@ -19,6 +18,8 @@ class User(AbstractUser):
 
     class Meta:
         ordering = ["id"]
+        verbose_name = "Пользователь"
+        verbose_name_plural = "Пользователи"
 
 
 class Subscription(models.Model):

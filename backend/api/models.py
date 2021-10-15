@@ -140,6 +140,7 @@ class ShoppingCart(models.Model):
 
     class Meta:
         verbose_name = "Корзина"
+        verbose_name_plural = "Корзина"
 
     def __str__(self):
         return f"{self.user} в {self.recipe}"

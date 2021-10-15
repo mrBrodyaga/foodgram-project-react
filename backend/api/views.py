@@ -68,7 +68,7 @@ class RecipeViewSet(CDLRUGenericViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     permission_classes = [
-        IsAuthenticated,
+        IsAuthenticatedOrReadOnly,
     ]
     lookup_field = "id"
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
@@ -78,7 +78,7 @@ class RecipeViewSet(CDLRUGenericViewSet):
     ]
 
     def get_serializer_class(self):
-        if self.action == "create":
+        if self.action == "create" or "update":
             return RecipeCreateSerializer
 
         return self.serializer_class

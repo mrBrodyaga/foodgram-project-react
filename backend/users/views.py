@@ -6,18 +6,16 @@ from rest_framework.permissions import (
     IsAuthenticatedOrReadOnly,
 )
 from rest_framework.response import Response
+from djoser.views import UserViewSet as DjoserUserViewSet
 
 from .models import Subscription, User
 from .serializers import CustomUserSerializer, SubscribeToSerializer
 
 
-class UserViewSet(viewsets.ReadOnlyModelViewSet):
+class UserViewSet(DjoserUserViewSet):
     """Получаем информацию по пользователю"""
 
-    queryset = User.objects.all()
-    serializer_class = CustomUserSerializer
     lookup_field = "id"
-    permission_classes = [IsAuthenticatedOrReadOnly]
 
     @action(
         detail=True,
