@@ -3,7 +3,7 @@ from django.db import models
 
 
 class User(AbstractUser):
-    password = models.CharField('password', max_length=128)
+    password = models.CharField("password", max_length=128)
     email = models.EmailField(unique=True, blank=False)
     first_name = models.TextField(max_length=256, blank=False)
     last_name = models.TextField(max_length=256, blank=False)

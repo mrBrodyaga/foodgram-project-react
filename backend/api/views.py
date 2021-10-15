@@ -1,7 +1,9 @@
+from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, mixins, status
 from rest_framework.decorators import action
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import (
     IsAuthenticated,
     IsAuthenticatedOrReadOnly,
@@ -71,6 +73,7 @@ class RecipeViewSet(CDLRUGenericViewSet):
         IsAuthenticatedOrReadOnly,
     ]
     lookup_field = "id"
+    pagination_class = PageNumberPagination
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     filterset_class = RecipeFilter
     search_fields = [
@@ -85,7 +88,7 @@ class RecipeViewSet(CDLRUGenericViewSet):
 
     @action(
         detail=True,
-        methods=["POST"],
+        methods=["GET"],
         permission_classes=[IsAuthenticated],
         url_path="favorite",
     )
@@ -119,7 +122,7 @@ class RecipeViewSet(CDLRUGenericViewSet):
 
     @action(
         detail=True,
-        methods=["POST"],
+        methods=["GET"],
         permission_classes=[IsAuthenticated],
         url_path="shopping_cart",
     )
@@ -136,7 +139,7 @@ class RecipeViewSet(CDLRUGenericViewSet):
             user=user, recipe=recipe
         )
         serializer = ShoppingCartSerializer(
-            recipe, context={"request": request}
+            shopping_cart, context={"request": request}
         )
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -186,7 +189,7 @@ class RecipeViewSet(CDLRUGenericViewSet):
             wishlist.append(
                 f"{name} - {data['amount']} ({data['measurement_unit']})"
             )
-        response = Response("\n".join(wishlist), content_type="text/plain")
+        response = HttpResponse("\n".join(wishlist), content_type="text/plain")
         response["Content-Disposition"] = 'attachment; filename="wishlist.txt"'
         return response
 

@@ -7,26 +7,33 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0008_auto_20210923_2255'),
+        ("api", "0008_auto_20210923_2255"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='ingredient',
-            options={'ordering': ('name',), 'verbose_name': 'Ингредиент', 'verbose_name_plural': 'Ингредиенты'},
+            name="ingredient",
+            options={
+                "ordering": ("name",),
+                "verbose_name": "Ингредиент",
+                "verbose_name_plural": "Ингредиенты",
+            },
         ),
         migrations.AlterModelOptions(
-            name='shoppingcart',
-            options={'verbose_name': 'Корзина'},
+            name="shoppingcart",
+            options={"verbose_name": "Корзина"},
         ),
         migrations.RenameField(
-            model_name='tag',
-            old_name='title',
-            new_name='name',
+            model_name="tag",
+            old_name="title",
+            new_name="name",
         ),
         migrations.AlterField(
-            model_name='recipeingredient',
-            name='amount',
-            field=models.FloatField(validators=[django.core.validators.MinValueValidator(1)], verbose_name='Количество'),
+            model_name="recipeingredient",
+            name="amount",
+            field=models.FloatField(
+                validators=[django.core.validators.MinValueValidator(1)],
+                verbose_name="Количество",
+            ),
         ),
     ]

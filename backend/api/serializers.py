@@ -1,10 +1,16 @@
+from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
-from rest_framework.fields import CurrentUserDefault
 
 from users.serializers import CustomUserSerializer
-from django.db import transaction
-from .models import Favorite, Ingredient, Recipe, Tag, Recipeingredient
-from drf_extra_fields.fields import Base64ImageField
+
+from .models import (
+    Favorite,
+    Ingredient,
+    Recipe,
+    Recipeingredient,
+    ShoppingCart,
+    Tag,
+)
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -26,7 +32,9 @@ class IngredientSerializer(serializers.ModelSerializer):
         try:
             ingredient = Ingredient.objects.get(id=data)
         except Ingredient.DoesNotExist:
-            raise serializers.ValidationError({f"Ингредиента с id={data} не существует."})
+            raise serializers.ValidationError(
+                {f"Ингредиента с id={data} не существует."}
+            )
         return ingredient
 
 
@@ -40,6 +48,8 @@ class RecipeIngredientsDetailsSerializer(serializers.ModelSerializer):
 
 class RecipeSerializer(serializers.ModelSerializer):
     """Сериализуем рецепты"""
+
+    author = CustomUserSerializer()
     ingredients = serializers.SerializerMethodField()
     tags = TagSerializer(many=True, read_only=True)
     is_favorited = serializers.SerializerMethodField()
@@ -55,18 +65,20 @@ class RecipeSerializer(serializers.ModelSerializer):
         request = self.context.get("request")
         user = request.user
 
-        return Favorite.objects.filter(user=user, recipe=obj).exists()
+        return ShoppingCart.objects.filter(user=user, recipe=obj).exists()
 
     def get_ingredients(self, obj):
         ingredients = Recipeingredient.objects.filter(recipe=obj)
         data = []
         for item in ingredients:
-            data.append({
-                "id": item.ingredient.id,
-                "name": item.ingredient.name,
-                "measurement_unit": item.ingredient.measurement_unit,
-                "amount": item.amount,
-            })
+            data.append(
+                {
+                    "id": item.ingredient.id,
+                    "name": item.ingredient.name,
+                    "measurement_unit": item.ingredient.measurement_unit,
+                    "amount": item.amount,
+                }
+            )
         return data
 
     class Meta:
@@ -108,7 +120,8 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                         for key, values in error.items():
                             for value in values:
                                 new_ingredient_errors.append(
-                                    f"'{key}': {value}")
+                                    f"'{key}': {value}"
+                                )
                 errors["ingredients"] = new_ingredient_errors
             raise serializers.ValidationError(errors)
         return is_valid
@@ -117,28 +130,36 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         data = super().validate(data)
 
         ingredients = data["ingredients"]
-        ingredients_ids = [ingredient["ingredient"]["id"] for ingredient in ingredients]
+        ingredients_ids = [
+            ingredient["ingredient"]["id"] for ingredient in ingredients
+        ]
         if len(ingredients) != len(set(ingredients_ids)):
             raise serializers.ValidationError(
-                {"detail": "В рецепт нельзя добавлять одни и те же ингредиенты"
-                           " несколько раз."})
+                {
+                    "detail": "В рецепт нельзя добавлять одни и те же ингредиенты"
+                    " несколько раз."
+                }
+            )
         return data
 
     def create(self, validated_data):
         tags = validated_data.pop("tags")
         ingredients = validated_data.pop("ingredients")
 
-        recipe = Recipe.objects.create(**validated_data,
-                                       author=self.context["request"].user)
+        recipe = Recipe.objects.create(
+            **validated_data, author=self.context["request"].user
+        )
         recipe.tags.set(tags)
 
         recipe_ingredients = []
         for ingredient in ingredients:
-            recipe_ingredients.append(Recipeingredient(
-                recipe=recipe,
-                ingredient_id=ingredient["ingredient"]["id"],
-                amount=ingredient["amount"],
-            ))
+            recipe_ingredients.append(
+                Recipeingredient(
+                    recipe=recipe,
+                    ingredient_id=ingredient["ingredient"]["id"],
+                    amount=ingredient["amount"],
+                )
+            )
         Recipeingredient.objects.bulk_create(recipe_ingredients)
         return recipe
 
@@ -157,19 +178,20 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
         recipe_ingredients = []
         for ingredient in ingredients:
-            recipe_ingredients.append(Recipeingredient(
-                recipe=instance,
-                ingredient_id=ingredient["ingredient"]["id"],
-                amount=ingredient["amount"],
-            ))
+            recipe_ingredients.append(
+                Recipeingredient(
+                    recipe=instance,
+                    ingredient_id=ingredient["ingredient"]["id"],
+                    amount=ingredient["amount"],
+                )
+            )
         Recipeingredient.objects.bulk_create(recipe_ingredients)
 
         return instance
 
     def to_representation(self, instance):
         return RecipeSerializer(
-            instance,
-            context={"request": self.context.get("request")}
+            instance, context={"request": self.context.get("request")}
         ).data
 
 
@@ -186,4 +208,12 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = ("id", "name", "image", "cooking_time")
-        model = Recipe
+        model = ShoppingCart
+
+    def to_representation(self, instance):
+        return {
+            "id": instance.recipe.id,
+            "name": instance.recipe.name,
+            "image": instance.recipe.image.url,
+            "cooking_time": instance.recipe.cooking_time,
+        }

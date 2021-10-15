@@ -3,10 +3,10 @@
 import os
 import sys
 
-from dotenv import load_dotenv, find_dotenv
-
+from dotenv import find_dotenv, load_dotenv
 
 load_dotenv(find_dotenv())
+
 
 def main():
     """Run administrative tasks."""

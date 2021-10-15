@@ -1,6 +1,4 @@
-from contextlib import suppress
-
-from djoser.serializers import UserSerializer, UserCreateSerializer
+from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers
 
 from api.models import Recipe
@@ -23,12 +21,12 @@ class CustomUserSerializer(UserSerializer):
         request = self.context.get("request")
         user = request.user
 
-        is_subscribed = False
+        if user.is_anonymous:
+            return False
 
-        with suppress(TypeError):
-            is_subscribed = Subscription.objects.filter(
-                follower=user, following=obj
-            ).exists()
+        is_subscribed = Subscription.objects.filter(
+            follower=user, following=obj
+        ).exists()
 
         return is_subscribed
 
