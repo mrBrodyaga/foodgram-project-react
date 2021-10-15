@@ -23,6 +23,7 @@ from .permissions import IsAdminOrReadOnly, IsAuthorOrAdminOrReadOnly
 from .serializers import (
     FavoriteSerializer,
     IngredientSerializer,
+    RecipeCreateSerializer,
     RecipeSerializer,
     ShoppingCartSerializer,
     TagSerializer,
@@ -53,6 +54,7 @@ class TagViewSet(
         IsAuthorOrAdminOrReadOnly,
         IsAuthenticatedOrReadOnly,
     ]
+    pagination_class = None
     lookup_field = "id"
     filter_backends = [filters.SearchFilter]
     search_fields = [
@@ -74,6 +76,12 @@ class RecipeViewSet(CDLRUGenericViewSet):
     search_fields = [
         "=name",
     ]
+
+    def get_serializer_class(self):
+        if self.action == "create":
+            return RecipeCreateSerializer
+
+        return self.serializer_class
 
     @action(
         detail=True,
@@ -194,6 +202,7 @@ class IngredientViewSet(
     serializer_class = IngredientSerializer
     permission_classes = [IsAdminOrReadOnly]
     lookup_field = "id"
+    pagination_class = None
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     filter_class = IngridientFilter
     search_fields = [
