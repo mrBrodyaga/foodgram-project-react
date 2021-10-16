@@ -67,7 +67,7 @@ class TagViewSet(
 class RecipeViewSet(CDLRUGenericViewSet):
     """Отображение рецептов"""
 
-    queryset = Recipe.objects.all()
+    queryset = Recipe.objects.select_related("author").all()
     serializer_class = RecipeSerializer
     permission_classes = [
         IsAuthenticatedOrReadOnly,
