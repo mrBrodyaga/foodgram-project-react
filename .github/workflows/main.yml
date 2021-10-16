@@ -60,7 +60,7 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
-          source: "docker-compose.yaml,default.conf,backend/entrypoint.sh"
+          source: "infra/docker-compose.yaml,infra/default.conf,backend/entrypoint.sh"
           target: "./"
 
       - name: executing remote ssh commands to deploy
@@ -71,6 +71,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
           script: |
+            cd infra
             sudo docker-compose pull
             sudo docker-compose down
             sudo docker-compose up -d

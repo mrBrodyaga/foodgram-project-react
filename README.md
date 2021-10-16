@@ -1,6 +1,6 @@
 # Foodgram
 
-https://github.com/mrbrodyaga/foodgram-project-react/actions/workflows/yamdb_workflow.yml/badge.svg
+https://github.com/mrbrodyaga/foodgram-project-react/actions/workflows/main.yml/badge.svg
 
 ### Описание
 Продуктовый помощник.
