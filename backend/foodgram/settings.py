@@ -156,6 +156,8 @@ SIMPLE_JWT = {
 
 AUTH_USER_MODEL = "users.User"
 
+DOMAIN = os.getenv('DOMAIN')
+
 DJOSER = {
     "SERIALIZERS": {
         "user_create": "users.serializers.CustomUserCreateSerializer",
@@ -167,6 +169,13 @@ DJOSER = {
         "user": ["rest_framework.permissions.AllowAny"],
         "user_list": ["rest_framework.permissions.AllowAny"],
     },
+    'HIDE_USERS': False,
+    'PASSWORD_RESET_CONFIRM_URL': 'password/reset/confirm/{uid}/{token}/',
+    'USERNAME_RESET_CONFIRM_URL': 'username/reset/confirm/{uid}/{token}/',
+    'ACTIVATION_URL': 'activate/{uid}/{token}/',
+    'SEND_ACTIVATION_EMAIL': True,
+    'DOMAIN': DOMAIN,
+    'SITE_NAME': 'Foodgram',
 }
 
 
@@ -183,3 +192,21 @@ LOGGING = {
         "level": "WARNING",
     },
 }
+
+#  подключаем движок filebased.EmailBackend
+#EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+# указываем директорию, в которую будут складываться файлы писем
+#EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")
+
+EMAIL_USE_SSL = True
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_PORT = os.getenv('EMAIL_PORT')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')
+
+SERVER_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")

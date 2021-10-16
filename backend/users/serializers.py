@@ -26,9 +26,9 @@ class CustomUserSerializer(UserSerializer):
 
         is_subscribed = Subscription.objects.filter(
             follower=user, following=obj
-        ).exists()  # noqa: R504
+        ).exists()
 
-        return is_subscribed  # noqa: R504
+        return is_subscribed
 
     class Meta:
         model = User
