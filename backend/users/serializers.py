@@ -81,8 +81,8 @@ class SubscribeToSerializer(serializers.ModelSerializer):
     def get_recipes_count(self, obj):
         author_id = obj.id
         count = Recipe.objects.filter(
-            author_id=author_id).count()  # noqa: R504
-        return count  # noqa: R504
+            author_id=author_id).count()
+        return count
 
     def get_recipes(self, obj):
         author_id = obj.id
