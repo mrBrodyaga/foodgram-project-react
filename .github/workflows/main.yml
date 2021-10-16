@@ -60,8 +60,8 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
-          source: "infra/docker-compose.yaml,infra/default.conf,backend/entrypoint.sh"
-          target: "./"
+          source: "infra/docker-compose.yaml,infra/nginx.conf,backend/entrypoint.sh"
+          target: "/home/mrbrodyaga"
 
       - name: executing remote ssh commands to deploy
         uses: appleboy/ssh-action@master
