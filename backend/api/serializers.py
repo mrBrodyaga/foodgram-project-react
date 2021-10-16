@@ -30,7 +30,7 @@ class IngredientSerializer(serializers.ModelSerializer):
 
     def to_internal_value(self, data):
         try:
-            ingredient = Ingredient.objects.get(id=data)
+            ingredient = Ingredient.objects.get(id=data) # noqa: R504
         except Ingredient.DoesNotExist:
             raise serializers.ValidationError(
                 {f"Ингредиента с id={data} не существует."}
