@@ -35,7 +35,7 @@ class IngredientSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {f"Ингредиента с id={data} не существует."}
             )
-        return ingredient
+        return ingredient # noqa: R504
 
 
 class RecipeIngredientsDetailsSerializer(serializers.ModelSerializer):

@@ -28,7 +28,7 @@ class CustomUserSerializer(UserSerializer):
             follower=user, following=obj
         ).exists()
 
-        return is_subscribed
+        return is_subscribed # noqa: R504
 
     class Meta:
         model = User
@@ -81,7 +81,7 @@ class SubscribeToSerializer(serializers.ModelSerializer):
     def get_recipes_count(self, obj):
         author_id = obj.id
         count = Recipe.objects.filter(author_id=author_id).count()
-        return count
+        return count # noqa: R504
 
     def get_recipes(self, obj):
         author_id = obj.id
