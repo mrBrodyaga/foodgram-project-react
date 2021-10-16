@@ -10,9 +10,7 @@ services:
       - ./.env
 
   backend:
-    build:
-      context: ../backend
-      dockerfile: Dockerfile
+    image: mrbrodyaga/foodgram-project-react
     restart: always
     command: sh /code/entrypoint.sh
     depends_on:
