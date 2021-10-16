@@ -136,8 +136,8 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         if len(ingredients) != len(set(ingredients_ids)):
             raise serializers.ValidationError(
                 {
-                    "detail": "В рецепт нельзя добавлять одни и те же ингредиенты"
-                    " несколько раз."
+                    "detail": "В рецепт нельзя добавлять"
+                    " одни и те же ингредиенты несколько раз."
                 }
             )
         return data
