@@ -22,7 +22,7 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class IngredientSerializer(serializers.ModelSerializer):
-    """Сериализуем ингридиенты"""
+    """Сериализуем ингредиенты"""
 
     class Meta:
         fields = "__all__"

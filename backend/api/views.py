@@ -199,7 +199,7 @@ class IngredientViewSet(
     mixins.RetrieveModelMixin,
     GenericViewSet,
 ):
-    """Отображение ингридиентов"""
+    """Отображение ингредиентов"""
 
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
